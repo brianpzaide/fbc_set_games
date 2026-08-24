@@ -1,0 +1,97 @@
+<svg viewBox="0 0 120 180" width="240" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <g id="pill">
+            <rect
+                x="-40"
+                y="-15"
+                width="80"
+                height="30"
+                rx="10"/>
+        </g>
+
+        <g id="diamond">
+            <polygon
+                points="
+                    0,-15
+                    40,0
+                    0,15
+                    -40,0"/>
+        </g>
+
+        <g id="squiggle">
+            <path d="
+                M -40,0
+                C -40,-20 -10,-25 10,-12
+                C 40,5 40,-15 40,-5
+                C 40,20 10,25 -10,12
+                C -40,-5 -40,15 -40,0
+                Z"/>
+        </g>
+
+        <pattern
+          id="striped-green"
+          width="8"
+          height="8"
+          patternUnits="userSpaceOnUse">
+            <line
+              x1="0" y1="0"
+              x2="0" y2="8"
+              stroke="green"
+              stroke-width="2"/>
+        </pattern>
+
+        <pattern
+          id="striped-red"
+          width="8"
+          height="8"
+          patternUnits="userSpaceOnUse">
+            <line
+              x1="0" y1="0"
+              x2="0" y2="8"
+              stroke="red"
+              stroke-width="2"/>
+        </pattern>
+
+        <pattern
+          id="striped-blue"
+          width="8"
+          height="8"
+          patternUnits="userSpaceOnUse">
+            <line
+              x1="0" y1="0"
+              x2="0" y2="8"
+              stroke="blue"
+              stroke-width="2"/>
+        </pattern>        
+    </defs>
+
+    
+    
+        <use href="#pill"
+            transform="translate(60, 45.0)"
+            fill="red"
+            stroke=" red "
+            stroke-width="3"/>
+    
+        <use href="#pill"
+            transform="translate(60, 90.0)"
+            fill="red"
+            stroke=" red "
+            stroke-width="3"/>
+    
+        <use href="#pill"
+            transform="translate(60, 135.0)"
+            fill="red"
+            stroke=" red "
+            stroke-width="3"/>
+     
+
+    <rect
+      x="0"
+      y="0"
+      width="120"
+      height="180"
+      rx="10"
+      fill="none"
+      stroke="black"/>    
+</svg>
