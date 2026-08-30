@@ -3,6 +3,24 @@
   <head>
     <meta charset="utf-8"/>
     <style>
+        body {
+            background: lightblue;
+            background: rgb(233, 171, 95);
+        }
+
+        canvas {
+            padding: 0;
+            margin: auto;
+            display: block;
+            background: #fff;
+            /* margin-top: 50px; */
+        }
+
+        div{
+            width: 350px;
+            margin: auto;
+        }
+
         .unit-toggle {
           display: inline-flex;
           align-items: center;
@@ -10,6 +28,7 @@
           font: 16px Arial, sans-serif;
           cursor: pointer;
           user-select: none;
+          margin-top: 10px;
         }
 
         .unit-toggle input {
@@ -41,32 +60,812 @@
           background: #02f30e;
         }
 
-
         .unit-toggle input:checked + .switch .knob {
           transform: translateX(20px);
         }   
 
     </style>
-    </head>
-    <body>
-      <canvas id="myCanvas" width="500" height="500"></canvas>
-      <script>
-        const canvas = document.getElementById('myCanvas');
-        const ctx = canvas.getContext('2d');
+</head>
+<body>
 
-        // Create an image object
-        const img = new Image();
-  
-        // Set the source to your SVG file path
-        img.src = 'cards/2002.svg';
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button id="timer_start_1"><strong>Start</strong></button>
+            <h4 id="fbc1_puzzle"><strong>Fib 1</strong></h4>
+            <button id="submit1"><strong>Submit</strong></button>
+        </div>
+        
+        <div>
+            <canvas id="fbc1"  width="288" height="180"></canvas>
+            <div id="score1"></div>
+        </div>
+    </div>
+        
+    <hr> 
+        
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button id="timer_start_2"><strong>Start</strong></button>
+            <h4><strong>Fib 2</strong></h4>
+            <button id="submit2"><strong>Submit</strong></button>
+        </div>
+        <div>
+            <canvas id="fbc2"  width="288" height="180"></canvas>
+            <div>
+                <canvas id="numpad"  width="288" height="96" style="margin-bottom: 20px;"></canvas> 
+            </div>
+            <div id="score2"></div>
+        </div>
+    </div>
 
-        // Wait for the SVG to load before drawing
-        img.onload = function() {
-          ctx.drawImage(img, 0, 0, 40, 60); // (image, x, y, width, height)
+
+    <hr>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="timer_start_3"><strong>Start</strong></button>
+        <h4><strong>Set 1</strong></h4>
+    </div>
+    <canvas id="set" width="180" height="320"></canvas>
+    <div id="score3"></div>
+
+    
+
+    <script type="text/javascript" language="javascript">
+
+        const colors = {
+            1: "red",
+            2: "green",
+            3: "blue"
         };
-      </script>
-    </body>
+
+        const fbc_session_interval = 60000;
+        const set_session_interval = 60000;
+
+        const fbc_cells_values = {
+            'a': 1,
+            'b': 1,
+            'c': 2,
+            'd': 3,
+            'e': 5,
+        }
+
+        const fbc_combinations = ['', 'a', 'b', 'c', 'd', 'e', 'ab', 'ac', 'ad', 'ae', 'bc', 'bd', 'be', 'cd', 'ce', 'de', 'abc', 'abd', 'abe', 'acd', 'ace', 'ade', 'bcd', 'bce', 'bde', 'cde', 'abcd', 'abce', 'abde', 'acde', 'bcde', 'abcde']
+
+        // ============================================= fbc 1 puzzle ================================================ //
+        
+        const fbc1_canvas = document.getElementById("fbc1");
+        const fbc1_context = fbc1_canvas.getContext("2d");
+        
+        const fbc1_start_stop_clock = document.getElementById("timer_start_1")
+        
+        const fbc1_scores_str = document.getElementById("score1");
+        const fbc1_scores_num = [0, 0];
+        
+        
+        const fbc1_board = document.getElementById("fbc1_puzzle")
+        const fbc1_puzzle_rep = {'a':0,'b':0,'c':0,'d':0,'e':0}
+        
+        
+        var fbc1_milliseconds = fbc_session_interval;
+        var fbc1_in_session = false;
+        var hr1 = 0, mn1 = 0, phr1 = 0, pmn1 = 0;
+
+        
+        function generate_new_fbc1(){
+            fbc1_puzzle_rep['a'] = 0
+            fbc1_puzzle_rep['b'] = 0
+            fbc1_puzzle_rep['c'] = 0
+            fbc1_puzzle_rep['d'] = 0
+            fbc1_puzzle_rep['e'] = 0
+            hr1 = 0
+            mn1 = 0
+            phr1 = Math.floor(Math.random() * (12 + 1));
+            pmn1 = Math.floor(Math.random() * (12 + 1)) * 5;
+            fbc1_scores_num[1] += 1
+            fbc1_board.innerHTML = `<strong>${String(phr1).padStart(2, '0')}/${String(pmn1).padStart(2, '0')}</strong>`
+        }
+
+        document.getElementById("submit1").addEventListener("click", () =>{
+            if (fbc1_in_session === true){
+                // check the solution
+                for (const [key, value] of Object.entries(fbc1_puzzle_rep)) {
+                    if (value === 0){
+                        continue
+                    }
+                    if (value === 1){
+                        hr1 += fbc_cells_values[key]
+                        continue
+                    }
+                    if(value === 2){
+                        mn1 += fbc_cells_values[key] * 5
+                        continue
+                    }
+                    if(value === 3){
+                        hr1 += fbc_cells_values[key]
+                        mn1 += fbc_cells_values[key] * 5
+                        continue
+                    }
+                }
+                // update the score
+                if (hr1 === phr1 && mn1 === pmn1){
+                    fbc1_scores_num[0] += 1
+                    // update scoreboard
+                    fbc1_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc1_scores_num[0]).padStart(2, '0')}/${String(fbc1_scores_num[1]).padStart(2, '0')}</strong>`
+                }
+                // generate new puzzle
+                generate_new_fbc1()
+                // update puzzle
+                fbc1_drawBoard()
+                // update scoreboard
+                fbc1_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc1_scores_num[0]).padStart(2, '0')}/${String(fbc1_scores_num[1]).padStart(2, '0')}</strong>`
+            }
+        })
+
+        function fbc1_drawBoard(){
+            // whiting out the previous board
+            fbc1_context.fillStyle = "white";
+            fbc1_context.beginPath();
+            fbc1_context.moveTo(0, 0)
+            fbc1_context.rect(0, 0, 288, 180);
+            fbc1_context.fill();
+
+            var lineWidth = 2;
+            fbc1_context.strokeStyle = "black";
+            // draw canvas borders
+
+
+            // draw two vertical lines
+            // first one of length 72
+            fbc1_context.beginPath();
+            fbc1_context.moveTo(36, 0);
+            fbc1_context.lineTo(36, 72);
+            fbc1_context.stroke();
+            // second one of length 180
+            fbc1_context.beginPath();
+            fbc1_context.moveTo(108, 0);
+            fbc1_context.lineTo(108, 180);
+            fbc1_context.stroke();
+
+            // draw two horizontal lines
+            // first one of length 36
+            fbc1_context.beginPath();
+            fbc1_context.moveTo(0, 36);
+            fbc1_context.lineTo(36, 36);
+            fbc1_context.stroke();
+            // second one of length 108
+            fbc1_context.beginPath();
+            fbc1_context.moveTo(0, 72);
+            fbc1_context.lineTo(108, 72);
+            fbc1_context.stroke();
+
+            if (fbc1_puzzle_rep['a'] > 0){
+                fbc1_context.fillStyle = colors[fbc1_puzzle_rep['a']];
+                fbc1_context.fillRect(1, 1, 34, 34);
+            }
+            if (fbc1_puzzle_rep['b'] > 0){
+                fbc1_context.fillStyle = colors[fbc1_puzzle_rep['b']];
+                fbc1_context.fillRect(1, 37, 34, 34);
+            }
+            if (fbc1_puzzle_rep['c'] > 0){
+                fbc1_context.fillStyle = colors[fbc1_puzzle_rep['c']];
+                fbc1_context.fillRect(37, 1, 70, 70);
+            }
+            if (fbc1_puzzle_rep['d'] > 0){
+                fbc1_context.fillStyle = colors[fbc1_puzzle_rep['d']];
+                fbc1_context.fillRect(1, 73, 106, 106);
+            }
+            if (fbc1_puzzle_rep['e'] > 0){
+                fbc1_context.fillStyle = colors[fbc1_puzzle_rep['e']];
+                fbc1_context.fillRect(109, 1, 178, 178);
+            }
+
+        }
+    
+        // add the canvas click listener for fbc1 canvas
+        fbc1_canvas.addEventListener('click', (e) => {
+            if (fbc1_in_session === true){
+                const x = Math.floor(e.offsetX);
+                const y = Math.floor(e.offsetY);
+                console.log(x, y)
+                if (x > 108){
+                    fbc1_puzzle_rep['e'] = (fbc1_puzzle_rep['e'] + 1) % 4
+                }else{
+                    if (y > 72){
+                        fbc1_puzzle_rep['d'] = (fbc1_puzzle_rep['d'] + 1) % 4
+                    }else{
+                        if (x > 36){
+                            fbc1_puzzle_rep['c'] = (fbc1_puzzle_rep['c'] + 1) % 4
+                        }else{
+                            if (y > 36){
+                                fbc1_puzzle_rep['b'] = (fbc1_puzzle_rep['b'] + 1) % 4
+                            }else{
+                                fbc1_puzzle_rep['a'] = (fbc1_puzzle_rep['a'] + 1) % 4
+                            }
+                        }
+                    }
+                }
+                console.log(fbc1_puzzle_rep)
+            }
+            fbc1_drawBoard()
+        })
+
+        fbc1_start_stop_clock.addEventListener("click", () => {
+            if (fbc1_in_session === true){
+                return
+            }else{
+                fbc1_start_stop_clock.innerText = "01:00" 
+                fbc1_start_game()
+                fbc1_in_session = true
+            }
+        })
+        
+        function fbc1_start_game(){
+            fbc1_milliseconds = fbc_session_interval
+
+            let secs = Math.floor(fbc1_milliseconds/1000);
+            let mins = Math.floor(secs/60)
+            secs = secs%60
+
+            fbc1_start_stop_clock.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` 
+            fbc1_scores_num[0] = 0
+            fbc1_scores_num[1] = 0
+            fbc1_in_session = true
+            
+            generate_new_fbc1()
+            fbc1_drawBoard()
+            fbc1_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc1_scores_num[0]).padStart(2, '0')}/${String(fbc1_scores_num[1]).padStart(2, '0')}</strong>`
+
+            setTimeout(() => {
+                fbc1_updateStopwatch();
+            }, 1000);
+        }
+
+        function fbc1_updateStopwatch(){
+            fbc1_milliseconds -= 1000;
+            if (fbc1_milliseconds <=0) {
+                fbc1_milliseconds = 0
+                fbc1_in_session = false
+                fbc1_start_stop_clock.innerHTML = "<strong>Start</strong>"
+                fbc1_board.innerHTML = `<strong>Fib 1</strong>`
+                return
+            }
+
+            let secs = Math.floor(fbc1_milliseconds/1000);
+            let mins = Math.floor(secs/60)
+            secs = secs%60
+
+            fbc1_start_stop_clock.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` 
+
+            setTimeout(() => {
+                fbc1_updateStopwatch();
+            }, 1000);
+        }
+
+// ==================================================================== fbc 2 puzzle ======================================================== //
+        
+        const fbc2_canvas = document.getElementById("fbc2");
+        const fbc2_context = fbc2_canvas.getContext("2d");
+        const numpad_canvas = document.getElementById("numpad");
+        const numpad_context = numpad_canvas.getContext("2d");
+        const numpad_user_selection = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0 }
+        
+        const fbc2_start_stop_clock = document.getElementById("timer_start_2")
+        
+        const fbc2_scores_str = document.getElementById("score2");
+        const fbc2_scores_num = [0, 0];
+        
+        const fbc2_puzzle_rep = {'a':0,'b':0,'c':0,'d':0,'e':0}
+        
+        
+        var fbc2_milliseconds = fbc_session_interval;
+        var fbc2_in_session = false;
+
+        
+        var hr2 = 0, mn2 = 0, phr2 = 0, pmn2 = 0;
+        
+        function generate_new_fbc2(){
+            fbc2_puzzle_rep['a'] = 0
+            fbc2_puzzle_rep['b'] = 0
+            fbc2_puzzle_rep['c'] = 0
+            fbc2_puzzle_rep['d'] = 0
+            fbc2_puzzle_rep['e'] = 0
+            for (let i = 0; i<12; i++){
+                numpad_user_selection[i] = 0
+            }
+            hr2 = 0;
+            mn2 = 0;
+            phr2 = 0;
+            pmn2 = 0;
+            const phr2_str = fbc_combinations[Math.floor(Math.random() * (31 + 1))];
+            if (phr2_str === ""){
+                phr2 = 0
+            }else{
+                [...phr2_str].forEach((char, index) => {
+                    phr2 += fbc_cells_values[char]
+                    fbc2_puzzle_rep[char] = (fbc2_puzzle_rep[char]+1)%4 
+                });
+            }
+            const pmn2_str = fbc_combinations[Math.floor(Math.random() * (31 + 1))];
+            if (pmn2_str === ""){
+                pmn2 = 0
+            }else{
+                [...pmn2_str].forEach((char, index) => {
+                    pmn2 += fbc_cells_values[char] * 5
+                    fbc2_puzzle_rep[char] = (fbc2_puzzle_rep[char] + 2)%4
+                });
+            }
+
+            if (pmn2 === 60){
+                pmn2 = 0
+                phr2 = (phr2+1)%12
+            }
+
+            console.log(phr2_str, phr2, pmn2_str, pmn2)
+            console.log(fbc2_puzzle_rep)
+
+            fbc2_scores_num[1] += 1
+        }
+
+        document.getElementById("submit2").addEventListener("click", () =>{
+            if(fbc2_in_session === true){
+                // check and update the score
+                for (const [key, value] of Object.entries(numpad_user_selection )) {
+                    const num = Number(key);
+                    if (value === 1){
+                        hr2 += num
+                    }else if (value === 2){
+                        mn2 += num*5
+                    } else if(value === 3){
+                        hr2 += num
+                        mn2 += num*5
+                    }            
+                }
+                console.log(hr2, phr2, mn2, pmn2)
+                console.log(numpad_user_selection)
+                if (hr2 === phr2 && mn2 === pmn2){
+                    fbc2_scores_num[0] += 1
+                    fbc2_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc2_scores_num[0]).padStart(2, '0')}/${String(fbc2_scores_num[1]).padStart(2, '0')}</strong>`
+                }
+                            
+                // generate new puzzle
+                generate_new_fbc2()
+                
+                // whitewash and repaint the puzzle canvas "fbc2"  
+                fbc2_drawBoard()
+                numpad_drawBoard()
+                // update the score board
+                fbc2_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc2_scores_num[0]).padStart(2, '0')}/${String(fbc2_scores_num[1]).padStart(2, '0')}</strong>`
+            }
+        })
+
+        function fbc2_drawBoard(){
+            // whiting out the previous board
+            fbc2_context.fillStyle = "white";
+            fbc2_context.beginPath();
+            fbc2_context.moveTo(0, 0)
+            fbc2_context.fillRect(0, 0, 288, 180);
+
+            fbc2_context.lineWidth = 2;
+            fbc2_context.strokeStyle = "black";
+            // draw canvas borders
+
+
+            // draw two vertical lines
+            // first one of length 72
+            fbc2_context.beginPath();
+            fbc2_context.moveTo(36, 0);
+            fbc2_context.lineTo(36, 72);
+            fbc2_context.stroke();
+            // second one of length 180
+            fbc2_context.beginPath();
+            fbc2_context.moveTo(108, 0);
+            fbc2_context.lineTo(108, 180);
+            fbc2_context.stroke();
+
+            // draw three horizontal lines
+            // first one of length 36
+            fbc2_context.beginPath();
+            fbc2_context.moveTo(0, 36);
+            fbc2_context.lineTo(36, 36);
+            fbc2_context.stroke();
+            // second one of length 108
+            fbc2_context.beginPath();
+            fbc2_context.moveTo(0, 72);
+            fbc2_context.lineTo(108, 72);
+            fbc2_context.stroke();
+            // third one of length 288
+            fbc2_context.beginPath();
+            fbc2_context.moveTo(0, 180);
+            fbc2_context.lineTo(288, 180);
+            fbc2_context.stroke();
+        
+            if (fbc2_puzzle_rep['a'] > 0){
+                fbc2_context.fillStyle = colors[fbc2_puzzle_rep['a']];
+                fbc2_context.fillRect(1, 1, 34, 34);
+            }
+            if (fbc2_puzzle_rep['b'] > 0){
+                fbc2_context.fillStyle = colors[fbc2_puzzle_rep['b']];
+                fbc2_context.fillRect(1, 37, 34, 34);
+            }
+            if (fbc2_puzzle_rep['c'] > 0){
+                fbc2_context.fillStyle = colors[fbc2_puzzle_rep['c']];
+                fbc2_context.fillRect(37, 1, 70, 70);
+            }
+            if (fbc2_puzzle_rep['d'] > 0){
+                fbc2_context.fillStyle = colors[fbc2_puzzle_rep['d']];
+                fbc2_context.fillRect(1, 73, 106, 106);
+            }
+            if (fbc2_puzzle_rep['e'] > 0){
+                fbc2_context.fillStyle = colors[fbc2_puzzle_rep['e']];
+                fbc2_context.fillRect(109, 1, 178, 178);
+            }
+        }
+    
+        // numpad whitewash and redraw
+        function numpad_drawBoard(){
+            // whiting out the previous board
+            numpad_context.fillStyle = "white";
+            numpad_context.fillRect(0, 0, 288, 96);
+
+            numpad_context.lineWidth = 2;
+            numpad_context.strokeStyle = "black";
+
+
+            // draw one horizontal line midway
+            numpad_context.beginPath();
+            numpad_context.moveTo(0, 48);
+            numpad_context.lineTo(288, 48);
+            numpad_context.stroke();
+
+            // draw 5 vertical lines
+            for(let i=1; i<6; i++){
+                numpad_context.beginPath();
+                numpad_context.moveTo(48 * i, 0);
+                numpad_context.lineTo(48 * i, 96);
+                numpad_context.stroke();
+            }
+
+            for (let row = 0; row<2; row++){
+                for (let col=0; col<6; col++){
+                    const start_x = col * 48 + 6;
+                    const start_y = row * 48 + 6;
+                    const user_selection = numpad_user_selection[row*6 + col]
+                    if (user_selection > 0){
+                        numpad_context.strokeStyle = colors[user_selection]
+                        numpad_context.lineWidth = 5
+                        numpad_context.beginPath();
+                        numpad_context.rect(start_x, start_y, 36, 36);
+                        numpad_context.stroke();
+                    }
+                    numpad_context.font = "10px Arial";
+                    numpad_context.fillStyle = 'black';
+                    numpad_context.textAlign = "center";
+                    numpad_context.textBaseline = "middle";
+                    numpad_context.fillText(`${String(row*6+col).padStart(2, '0')} ${String((row*6+col)*5).padStart(2, '0')}`, col * 48 + 24, row * 48 + 24)
+                    numpad_context.stroke();
+                }
+            }
+        }
+
+        // add the canvas click listener for numpad canvas
+        numpad_canvas.addEventListener('click', (e) => {
+            if (fbc2_in_session === true){
+                const x = Math.floor(e.offsetX/48);
+                const y = Math.floor(e.offsetY/48);
+                console.log(x, y)
+                numpad_user_selection[y*6+x] = (numpad_user_selection[(y*6)+x]+1)%4
+            }
+            numpad_drawBoard()
+        })
+
+        fbc2_start_stop_clock.addEventListener("click", () => {
+            if (fbc2_in_session === true){
+                return
+            }else{
+                fbc2_start_stop_clock.innerText = "01:00" 
+                fbc2_start_game()
+            }
+        })
+        
+        function fbc2_start_game(){
+            fbc2_milliseconds = fbc_session_interval
+
+            let secs = Math.floor(fbc2_milliseconds/1000);
+            let mins = Math.floor(secs/60)
+            secs = secs%60
+
+            fbc2_start_stop_clock.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` 
+            fbc2_scores_num[0] = 0
+            fbc2_scores_num[1] = 0
+            fbc2_in_session = true
+            
+            // generate puzzle
+            generate_new_fbc2()
+            // whitewash and repaint the puzzle canvas "fbc2"  
+            fbc2_drawBoard()
+            numpad_drawBoard()
+            // update the score board
+            fbc2_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc2_scores_num[0]).padStart(2, '0')}/${String(fbc2_scores_num[1]).padStart(2, '0')}</strong>`
+
+            setTimeout(() => {
+                fbc2_updateStopwatch();
+            }, 1000);
+        }
+
+        function fbc2_updateStopwatch(){
+            fbc2_milliseconds -= 1000;
+            if (fbc2_milliseconds <=0) {
+                fbc2_milliseconds = 0
+                fbc2_in_session = false
+                fbc2_start_stop_clock.innerHTML = "<strong>Start</strong>"
+                return
+            }
+
+            let secs = Math.floor(fbc2_milliseconds/1000);
+            let mins = Math.floor(secs/60)
+            secs = secs%60
+
+            fbc2_start_stop_clock.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` 
+
+            setTimeout(() => {
+                fbc2_updateStopwatch();
+            }, 1000);
+        }        
+
+// =========================================================== set 1 puzzle ========================================================== //
+        const set_canvas = document.getElementById("set");
+        const set_context = set_canvas.getContext("2d");
+
+        const set_scores_str = document.getElementById("score3");
+        const set_scores_num = [0, 0];
+    
+        const set_start_stop_clock = document.getElementById("timer_start_3")
+
+        var sets_found = {}
+        var set_puzzle_rep = {}
+        var set_puzzle_cards_list = []
+        var all_sets_found = false
+        var set_milliseconds = 30000;
+        var set_in_session = false;
+
+        function generate_new_set(){
+            set_puzzle_rep = {}
+            set_puzzle_cards_list = []
+            sets_found = {}
+            let k = 0
+            while(k < 12){
+                const _shape = Math.floor(Math.random() * 3);
+                const _color = Math.floor(Math.random() * 3);
+                const _shade = Math.floor(Math.random() * 3);
+                const _count = Math.floor(Math.random() * 3);
+                const card = `${_shape}${_color}${_shade}${_count}`
+                if (!Object.hasOwn(set_puzzle_rep, card)){
+                    set_puzzle_rep[card] = 0
+                    set_puzzle_cards_list.push([_shape, _color, _shade, _count])
+                    k += 1
+                }
+            }
+            return find_all_sets()
+        }
+
+        function find_all_sets(){
+            for(let i=0; i<9; i++){
+                for (let j=i+1; j<12; j++){
+                    const card_1 = set_puzzle_cards_list[i]
+                    const card_2 = set_puzzle_cards_list[j]
+                    const complement = [0, 0, 0, 0]
+                    for (let k=0; k<4; k++){
+                        complement[k] = (3 - (card_1[k] + card_2[k])%3) % 3
+                    }
+                    let card_1_str = `${card_1[0]}${card_1[1]}${card_1[2]}${card_1[3]}`
+                    let card_2_str = `${card_2[0]}${card_2[1]}${card_2[2]}${card_2[3]}`
+                    let complement_str = `${complement[0]}${complement[1]}${complement[2]}${complement[3]}`
+                    if (Object.hasOwn(set_puzzle_rep, complement_str)){
+                        const _set = [card_1_str, card_2_str, complement_str]
+                        _set.sort()
+                        const set_str = `${_set[0]}${_set[1]}${_set[2]}`
+                        sets_found[set_str] = false
+                    }
+                }
+            }
+            return Object.keys(sets_found).length
+        }
+
+        function set_drawBoard(){
+            // whiting out the previous board
+            set_context.fillStyle = "white";
+            set_context.beginPath();
+            set_context.moveTo(0, 0)
+            set_context.fillRect(0, 0, 180, 320);
+
+            set_context.lineWidth = 3;
+            set_context.strokeStyle = "black";
+        
+            // draw canvas borders
+            // draw top border
+            set_context.beginPath();
+            set_context.moveTo(0, 0);
+            set_context.lineTo(180, 0);
+            set_context.stroke();
+            // draw bottom border
+            set_context.beginPath();
+            set_context.moveTo(0, 320);
+            set_context.lineTo(180, 320);
+            set_context.stroke();
+            // draw left border
+            set_context.beginPath();
+            set_context.moveTo(0, 0);
+            set_context.lineTo(0, 320);
+            set_context.stroke();
+            // draw right border
+            set_context.beginPath();
+            set_context.moveTo(180, 0);
+            set_context.lineTo(180, 320);
+            set_context.stroke();        
+
+            // draw two vertical lines
+            // first one
+            set_context.beginPath();
+            set_context.moveTo(59, 0);
+            set_context.lineTo(59, 320);
+            set_context.stroke();
+            // second one
+            set_context.beginPath();
+            set_context.moveTo(119, 0);
+            set_context.lineTo(119, 320);
+            set_context.stroke();
+       
+
+            // draw three horizontal lines
+            // first one
+            set_context.beginPath();
+            set_context.moveTo(0, 79);
+            set_context.lineTo(180, 79);
+            set_context.stroke();
+            // second one
+            set_context.beginPath();
+            set_context.moveTo(0, 159);
+            set_context.lineTo(180, 159);
+            set_context.stroke();
+            // third one
+            set_context.beginPath();
+            set_context.moveTo(0, 239);
+            set_context.lineTo(180, 239);
+            set_context.stroke();
+
+            // generate new set game puzzle
+            if (set_in_session === false){
+                let num_sets_found = 0
+                while (num_sets_found < 7){
+                    sets_found = {}
+                    num_sets_found = generate_new_set()
+                }
+                set_scores_num[1] = num_sets_found
+                set_scores_str.innerHTML = `Score(correct/total): <strong>${String(set_scores_num[0]).padStart(2, '0')}/${String(set_scores_num[1]).padStart(2, '0')}</strong>`
+            }
+
+            // draw the images on each partitions
+            for(let i = 0; i < 12; i++){
+                const card = set_puzzle_cards_list[i]
+                const card_str = `${card[0]}${card[1]}${card[2]}${card[3]}`
+                // create an image object
+                const img = new Image();
+                // set the source to your SVG file path
+                img.src = `cards/${card_str}.svg`;
+                // wait for the SVG to load before drawing
+                const row = Math.floor(i/3);
+                const col = i%3
+                img.onload = function() {
+                  set_context.drawImage(img, col*60+10, row*80+10, 40, 60);
+                };
+                // draw rectangle boundary in the cells(around the cards) that user has selected
+                if (set_puzzle_rep[card_str] === 1){
+                    set_context.beginPath();
+                    set_context.strokeStyle = "#9202f2"
+                    set_context.rect(col*60+5, row*80+5, 50, 70);
+                    set_context.stroke();
+                }
+            }
+        }
+        set_canvas.addEventListener('click', (e) => {
+            if (set_in_session === true){
+                const x = Math.floor(e.offsetX/60);
+                const y = Math.floor(e.offsetY/80);
+                console.log(x, y)
+                let card = set_puzzle_cards_list[y*3 +x]
+                let card_str = `${card[0]}${card[1]}${card[2]}${card[3]}`
+                set_puzzle_rep[card_str] = (set_puzzle_rep[card_str] + 1) % 2
+
+                let num_cards_selected = 0
+                for (const [key, value] of Object.entries(set_puzzle_rep)) {
+                    if (value === 1){
+                        num_cards_selected += 1
+                    }
+                }
+                if (num_cards_selected === 3){
+                    // add 1 to the score if selected cards form a set
+                    const selected_cards = Object.entries(set_puzzle_rep).filter(([card, value]) => value === 1).map(([card]) => card);
+                    selected_cards.sort()
+                    const set_str = `${selected_cards[0]}${selected_cards[1]}${selected_cards[2]}`
+                    console.log(set_str)
+                    // checking if the user selected cards form a set anf if yes register it that it was found
+                    if (Object.hasOwn(sets_found, set_str)){
+                        sets_found[set_str] = true
+                        // compute the current score
+                        let _score = 0
+                        for (const key in sets_found) {
+                            if(sets_found[key] === true){
+                                _score  += 1;
+                            }
+                        }
+                        set_scores_num[0] = _score
+                    }
+
+                    // update the scoreboard
+                    set_scores_str.innerHTML = `Score(correct/total): <strong>${String(set_scores_num[0]).padStart(2, '0')}/${String(set_scores_num[1]).padStart(2, '0')}</strong>`
+                    
+                    // unselect the cards
+                    for (const [key, value] of Object.entries(set_puzzle_rep)) {
+                        set_puzzle_rep[key] = 0
+                    }
+
+                }
+                set_drawBoard()
+            }
+        })
+
+        set_start_stop_clock.addEventListener("click", () => {
+            if (set_in_session === true){
+                return
+            }else{
+                set_start_stop_clock.innerText = "01:00" 
+                set_start_game()
+                set_in_session = true
+            }
+        })
+
+
+        function set_start_game(){
+            set_milliseconds = set_session_interval
+
+            let secs = Math.floor(set_milliseconds/1000);
+            let mins = Math.floor(secs/60)
+            secs = secs%60
+
+            set_start_stop_clock.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` 
+            set_drawBoard()
+
+            setTimeout(() => {
+                set_updateStopwatch();
+            }, 1000);
+        }
+
+        function set_updateStopwatch(){
+            set_milliseconds -= 1000;
+            if (set_milliseconds <=0) {
+                set_milliseconds = 0
+                set_in_session = false
+                set_start_stop_clock.innerHTML = "<strong>Start</strong>"
+                return
+            }
+
+            let secs = Math.floor(set_milliseconds/1000);
+            let mins = Math.floor(secs/60)
+            secs = secs%60
+
+            set_start_stop_clock.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` 
+
+            setTimeout(() => {
+                set_updateStopwatch();
+            }, 1000);
+        }
+
+ //============================================================================================================================   
+
+        fbc1_drawBoard()
+        fbc2_drawBoard()
+        numpad_drawBoard()
+
+    </script>
+</body>
 </html>
-
-
-
