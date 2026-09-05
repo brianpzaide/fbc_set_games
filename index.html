@@ -286,7 +286,7 @@
             phr1 = Math.floor(Math.random() * (12 + 1));
             pmn1 = Math.floor(Math.random() * (12 + 1)) * 5;
             fbc1_scores_num[1] += 1
-            fbc1_board.innerHTML = `<strong>${String(phr1).padStart(2, '0')}/${String(pmn1).padStart(2, '0')}</strong>`
+            fbc1_board.innerHTML = `<strong>${String(phr1).padStart(2, '0')}:${String(pmn1).padStart(2, '0')}</strong>`
         }
 
         document.getElementById("submit1").addEventListener("click", () =>{
@@ -865,6 +865,7 @@
                     num_sets_found = generate_new_set()
                 }
                 set_scores_num[1] = num_sets_found
+                set_scores_num[0] = 0
                 set_scores_str.innerHTML = `Score(correct/total): <strong>${String(set_scores_num[0]).padStart(2, '0')}/${String(set_scores_num[1]).padStart(2, '0')}</strong>`
             }
 
