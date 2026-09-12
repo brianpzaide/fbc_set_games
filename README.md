@@ -8,7 +8,7 @@ This is a simple, single page, browser-based collection of timed exercises built
 * JavaScript
 * SVG assets generated with Python and Jinja
 
-Live demo: [GitHub Pages URL]
+Live demo: https://brianpzaide.github.io/fbc_set_games/
 
 ### Exercises
 
