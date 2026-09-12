@@ -66,13 +66,25 @@
     </defs>
 
     
-    {% for p in positions %}
-        <use href="#{{ shape }}"
-            transform="translate({{p.x}}, {{p.y}})"
-            fill="{{ pattern }}"
-            stroke=" {{color}} "
+    
+        <use href="#diamond"
+            transform="translate(60, 45.0)"
+            fill="blue"
+            stroke=" blue "
             stroke-width="3"/>
-    {% endfor %} 
+    
+        <use href="#diamond"
+            transform="translate(60, 90.0)"
+            fill="blue"
+            stroke=" blue "
+            stroke-width="3"/>
+    
+        <use href="#diamond"
+            transform="translate(60, 135.0)"
+            fill="blue"
+            stroke=" blue "
+            stroke-width="3"/>
+     
 
     <rect
       x="0"
