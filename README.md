@@ -45,8 +45,4 @@ Third-party names and trademarks belong to their respective owners and are menti
 
 ### License
 
-Unless otherwise noted, the source code and original assets in this repository are provided under the MIT License.
-
-See LICENSE for the full license text.
-
 Third-party names, trademarks, and intellectual property remain the property of their respective owners.
