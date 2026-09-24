@@ -20,7 +20,7 @@ The cards used in this project were generated from scratch as SVG files using Py
 
 #### Fibonacci Clock
 
-A timed exercise based around the [Fibonacci clock](https://www.instructables.com/The-Fibonacci-Clock/) concept.
+Two types of timed exercises based around the [Fibonacci clock](https://www.instructables.com/The-Fibonacci-Clock/) concept.
 
 ### Running locally
 
@@ -42,7 +42,3 @@ This is a personal, non-commercial project.
 The project is not affiliated with, sponsored by, or endorsed by the creators or owners of any third-party games or trademarks referenced by individual exercises.
 
 Third-party names and trademarks belong to their respective owners and are mentioned only to describe the inspiration for an exercise.
-
-### License
-
-Third-party names, trademarks, and intellectual property remain the property of their respective owners.
