@@ -1,26 +1,21 @@
-# Mental Exercises
+# Fun Exercises
 
-A small collection of timed mental exercises.
+A set of timed fun exercises.
 
-This is a simple, single page, browser-based collection of timed exercises built with:
+This is a single page application built with:
 * HTML5 Canvas
 * CSS
 * JavaScript
 * SVG assets generated with Python and Jinja
 
-Live demo: https://brianpzaide.github.io/fbc_set_games/
+[demo](https://brianpzaide.github.io/fbc_set_games/)
 
 ### Exercises
 
-#### Visual pattern matching
-
-This exercise is inspired by the card game SET®. SET® is a trademark of its respective owner. This project is an independent, non-commercial project and is not affiliated with or endorsed by the owners of SET®.
-
+* SET® game inspired timed exercise. SET® is a trademark of its respective owner. This project is an independent, non-commercial project and is not affiliated with or endorsed by the owners of SET®. 
 The cards used in this project were generated from scratch as SVG files using Python and Jinja. They are *not* copies of the original game's artwork. See `card_svg_maker.py` file. 
 
-#### Fibonacci Clock
-
-Two types of timed exercises based around the [Fibonacci clock](https://www.instructables.com/The-Fibonacci-Clock/) concept.
+* The next two types of timed exercises are based around the [Fibonacci clock](https://www.instructables.com/The-Fibonacci-Clock/) concept.
 
 ### Running locally
 
@@ -41,4 +36,4 @@ This is a personal, non-commercial project.
 
 The project is not affiliated with, sponsored by, or endorsed by the creators or owners of any third-party games or trademarks referenced by individual exercises.
 
-Third-party names and trademarks belong to their respective owners and are mentioned only to describe the inspiration for an exercise.
+Third-party names and trademarks belong to their respective owners and are mentioned only to describe the inspiration for the exercises.
