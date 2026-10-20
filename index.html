@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <style>
+<style>
         * {
             box-sizing: border-box;
         }
@@ -125,6 +125,18 @@
                 inset 0 1px 2px rgba(0, 0, 0, .04),
                 0 3px 10px rgba(0, 0, 0, .06);
         }
+        .puzzle-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        #playerinput {
+            display: block;
+            margin: 0;
+        }
 
         /* Score */
         [id^="score"] {
@@ -140,8 +152,8 @@
 
         /* Numpad spacing */
         #numpad {
-            margin-top: 12px !important;
-            margin-bottom: 4px !important;
+            margin-top: 12px;
+            margin-bottom: 4px;
         }
 
         /* Section separators */
@@ -166,18 +178,18 @@
                 height: auto;
             }
 
-            body {
-                padding: 15px 10px 35px;
-            }
+                body {
+                    padding: 15px 10px 35px;
+                }
 
-            body > div {
-                padding: 14px;
-            }
+                body > div {
+                    padding: 14px;
+                }
 
-            button {
-                min-width: 70px;
-                padding: 8px 11px;
-            }
+                button {
+                    min-width: 70px;
+                    padding: 8px 11px;
+                }
 
                 h4 {
                     font-size: 16px;
@@ -185,48 +197,65 @@
             }
         </style>
     </head>
-<body>
+    
+    <body>
 
-    <!-- Fibonacci 1 -->
-    <div class="puzzle-card">
-        <div class="puzzle-header">
-            <button id="timer_start_1"><strong>Start</strong></button>
-            <h4 id="fbc1_puzzle"><strong>Fib 1</strong></h4>
-            <button id="submit1"><strong>Submit</strong></button>
+        <!-- Fibonacci 1 -->
+        <div class="puzzle-card">
+            <div class="puzzle-header">
+                <button id="timer_start_1"><strong>Start</strong></button>
+                <h4 id="fbc1_puzzle"><strong>Fib 1</strong></h4>
+                <button id="submit1"><strong>Submit</strong></button>
+            </div>
+            <canvas id="fbc1" width="288" height="180"></canvas>
+            <div id="score1"></div>
         </div>
 
-        <canvas id="fbc1" width="288" height="180"></canvas>
-        <div id="score1"></div>
-    </div>
 
+        <!-- Fibonacci 2 -->
+        <div class="puzzle-card">
+            <div class="puzzle-header">
+                <button id="timer_start_2"><strong>Start</strong></button>
+                <h4><strong>Fib 2</strong></h4>
+            </div>
 
-    <!-- Fibonacci 2 -->
-    <div class="puzzle-card">
-        <div class="puzzle-header">
-            <button id="timer_start_2"><strong>Start</strong></button>
-            <h4><strong>Fib 2</strong></h4>
-            <button id="submit2"><strong>Submit</strong></button>
+            <canvas id="fbc2" width="288" height="180"></canvas>
+
+            <div class="puzzle-buttons">
+                <canvas id="playerinput" width="96" height="48"></canvas>
+                <button id="submit2"><strong>Submit</strong></button>        
+            </div>
+
+            <canvas id="numpad" width="312" height="24"></canvas>
+
+            <div id="score2"></div>
         </div>
 
-        <canvas id="fbc2" width="288" height="180"></canvas>
 
-        <canvas id="numpad" width="288" height="96"></canvas>
+        <!-- Set-->
+        <div class="puzzle-card">
+            <div class="puzzle-header">
+                <button id="timer_start_3"><strong>Start</strong></button>
+                <h4><strong>Set</strong></h4>
+            </div>
 
-        <div id="score2"></div>
-    </div>
+            <canvas id="set" width="180" height="320"></canvas>
 
-
-    <!-- Set 1 -->
-    <div class="puzzle-card">
-        <div class="puzzle-header">
-            <button id="timer_start_3"><strong>Start</strong></button>
-            <h4><strong>Set 1</strong></h4>
+            <div id="score3"></div>
         </div>
 
-        <canvas id="set" width="180" height="320"></canvas>
 
-        <div id="score3"></div>
-    </div>
+        <!-- 9Puzzle_set-->
+        <div class="puzzle-card">
+            <div class="puzzle-header">
+                <button id="timer_start_4"><strong>Start</strong></button>
+                <h4><strong>Set15Puzzle</strong></h4>
+            </div>
+
+            <canvas id="set15puzzle" width="180" height="320"></canvas>
+
+            <div id="score4"></div>
+        </div>
 
     
 
@@ -465,9 +494,11 @@
         
         const fbc2_canvas = document.getElementById("fbc2");
         const fbc2_context = fbc2_canvas.getContext("2d");
+        const playerinput_canvas = document.getElementById("playerinput");
+        const playerinput_context = playerinput_canvas.getContext("2d");
         const numpad_canvas = document.getElementById("numpad");
         const numpad_context = numpad_canvas.getContext("2d");
-        const numpad_user_selection = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0 }
+        const numpad_user_selection = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0 }
         
         const fbc2_start_stop_clock = document.getElementById("timer_start_2")
         
@@ -480,6 +511,7 @@
         var fbc2_milliseconds = fbc_session_interval;
         var fbc2_in_session = false;
 
+        var is_hour = true;
         
         var hr2 = 0, mn2 = 0, phr2 = 0, pmn2 = 0;
         
@@ -515,10 +547,10 @@
                 });
             }
 
-            if (pmn2 === 60){
-                pmn2 = 0
-                phr2 = (phr2+1)%12
-            }
+            // if (pmn2 === 60){
+            //     pmn2 = 0
+            //     phr2 = (phr2+1)%12
+            // }
 
             console.log(phr2_str, phr2, pmn2_str, pmn2)
             console.log(fbc2_puzzle_rep)
@@ -552,6 +584,8 @@
                 
                 // whitewash and repaint the puzzle canvas "fbc2"  
                 fbc2_drawBoard()
+                playerinput_drawBoard()
+                
                 numpad_drawBoard()
                 // update the score board
                 fbc2_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc2_scores_num[0]).padStart(2, '0')}/${String(fbc2_scores_num[1]).padStart(2, '0')}</strong>`
@@ -625,57 +659,106 @@
         function numpad_drawBoard(){
             // whiting out the previous board
             numpad_context.fillStyle = "white";
-            numpad_context.fillRect(0, 0, 288, 96);
+            numpad_context.fillRect(0, 0, 312, 24);
 
             numpad_context.lineWidth = 2;
             numpad_context.strokeStyle = "black";
 
-
-            // draw one horizontal line midway
-            numpad_context.beginPath();
-            numpad_context.moveTo(0, 48);
-            numpad_context.lineTo(288, 48);
-            numpad_context.stroke();
-
-            // draw 5 vertical lines
-            for(let i=1; i<6; i++){
+            // draw 12 vertical lines
+            for(let i=1; i<13; i++){
                 numpad_context.beginPath();
-                numpad_context.moveTo(48 * i, 0);
-                numpad_context.lineTo(48 * i, 96);
+                numpad_context.moveTo(24 * i, 0);
+                numpad_context.lineTo(24 * i, 24);
                 numpad_context.stroke();
             }
 
-            for (let row = 0; row<2; row++){
-                for (let col=0; col<6; col++){
-                    const start_x = col * 48 + 6;
-                    const start_y = row * 48 + 6;
-                    const user_selection = numpad_user_selection[row*6 + col]
-                    if (user_selection > 0){
-                        numpad_context.strokeStyle = colors[user_selection]
-                        numpad_context.lineWidth = 5
-                        numpad_context.beginPath();
-                        numpad_context.rect(start_x, start_y, 36, 36);
-                        numpad_context.stroke();
-                    }
-                    numpad_context.font = "10px Arial";
-                    numpad_context.fillStyle = 'black';
-                    numpad_context.textAlign = "center";
-                    numpad_context.textBaseline = "middle";
-                    numpad_context.fillText(`${String(row*6+col).padStart(2, '0')} ${String((row*6+col)*5).padStart(2, '0')}`, col * 48 + 24, row * 48 + 24)
+            for (let col=0; col<13; col++){
+                const start_x = col * 24 + 3;
+                const start_y = 3;
+                const user_selection = numpad_user_selection[col]
+                if (user_selection > 0){
+                    numpad_context.strokeStyle = colors[user_selection]
+                    numpad_context.lineWidth = 5
+                    numpad_context.beginPath();
+                    numpad_context.rect(start_x, start_y, 20, 20);
                     numpad_context.stroke();
                 }
+                numpad_context.font = "12px Arial";
+                if (is_hour === true){
+                    numpad_context.fillStyle = 'red';
+                }else{
+                    numpad_context.fillStyle = 'green';
+                }
+                numpad_context.textAlign = "center";
+                numpad_context.textBaseline = "middle";
+                if (is_hour === true){
+                    numpad_context.fillText(`${String(col).padStart(2, '0')}`, col * 24 + 12, 12)
+                }else{
+                    numpad_context.fillText(`${String(col*5).padStart(2, '0')}`, col * 24 + 12, 12)
+                }
+                
+                numpad_context.stroke();
             }
         }
 
         // add the canvas click listener for numpad canvas
         numpad_canvas.addEventListener('click', (e) => {
             if (fbc2_in_session === true){
-                const x = Math.floor(e.offsetX/48);
-                const y = Math.floor(e.offsetY/48);
-                console.log(x, y)
-                numpad_user_selection[y*6+x] = (numpad_user_selection[(y*6)+x]+1)%4
+                const x = Math.floor(e.offsetX/24);
+                if (is_hour === true){
+                    hr2 = x
+                }else{
+                    mn2 = x*5
+                }
+                console.log("numpad event click listener", x)
+                playerinput_drawBoard()
             }
-            numpad_drawBoard()
+            // numpad_drawBoard()
+            // playerinput_drawBoard()
+        })
+
+        // playerinput whitewash and redraw
+        function playerinput_drawBoard(){
+            // whiting out the previous board
+            playerinput_context.fillStyle = "white";
+            playerinput_context.fillRect(0, 0, 96, 48);
+
+            playerinput_context.lineWidth = 2;
+            playerinput_context.strokeStyle = "black";
+
+            // draw 1 middle vertical line
+            playerinput_context.beginPath();
+            playerinput_context.moveTo(48, 0);
+            playerinput_context.lineTo(48, 48);
+            playerinput_context.stroke();
+
+            playerinput_context.fillStyle = "red";
+            playerinput_context.fillRect(0, 0, 46, 48);
+
+            playerinput_context.fillStyle = "green";
+            playerinput_context.fillRect(50, 0, 46, 48);
+
+            playerinput_context.font = "12px Arial";
+            playerinput_context.textAlign = "center";
+            playerinput_context.textBaseline = "middle";
+            playerinput_context.fillStyle = 'black';
+
+            playerinput_context.fillText(`${String(hr2).padStart(2, '0')}`, 24, 24)
+            playerinput_context.fillText(`${String(mn2).padStart(2, '0')}`, 72, 24)
+
+        }
+        
+        // add the canvas click listener for numpad canvas
+        playerinput_canvas.addEventListener('click', (e) => {
+            if (fbc2_in_session === true){
+                const x = Math.floor(e.offsetX/48);
+                if (x > 0 ){
+                    is_hour = false
+                }else{
+                    is_hour = true
+                }
+                numpad_drawBoard()
+            }
         })
 
         fbc2_start_stop_clock.addEventListener("click", () => {
@@ -730,9 +813,14 @@
             setTimeout(() => {
                 fbc2_updateStopwatch();
             }, 1000);
-        }        
+        }
+        
+        fbc1_drawBoard()
+        fbc2_drawBoard()
+        playerinput_drawBoard()
+        numpad_drawBoard()
 
-// =========================================================== set 1 puzzle ========================================================== //
+// =========================================================== set puzzle ========================================================== //
         const set_canvas = document.getElementById("set");
         const set_context = set_canvas.getContext("2d");
 
@@ -983,10 +1071,6 @@
 
  //============================================================================================================================   
 
-        fbc1_drawBoard()
-        fbc2_drawBoard()
-        numpad_drawBoard()
-
-    </script>
-</body>
+        </script>
+    </body>
 </html>
