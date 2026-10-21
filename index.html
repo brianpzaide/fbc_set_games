@@ -484,7 +484,7 @@
         const playerinput_context = playerinput_canvas.getContext("2d");
         const numpad_canvas = document.getElementById("numpad");
         const numpad_context = numpad_canvas.getContext("2d");
-        const numpad_user_selection = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0 }
+        // const numpad_user_selection = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0 }
         
         const fbc2_start_stop_clock = document.getElementById("timer_start_2")
         
@@ -507,9 +507,9 @@
             fbc2_puzzle_rep['c'] = 0
             fbc2_puzzle_rep['d'] = 0
             fbc2_puzzle_rep['e'] = 0
-            for (let i = 0; i<12; i++){
-                numpad_user_selection[i] = 0
-            }
+            // for (let i = 0; i<12; i++){
+            //     numpad_user_selection[i] = 0
+            // }
             hr2 = 0;
             mn2 = 0;
             phr2 = 0;
@@ -539,19 +539,19 @@
         document.getElementById("submit2").addEventListener("click", () =>{
             if(fbc2_in_session === true){
                 // check and update the score
-                for (const [key, value] of Object.entries(numpad_user_selection )) {
-                    const num = Number(key);
-                    if (value === 1){
-                        hr2 += num
-                    }else if (value === 2){
-                        mn2 += num*5
-                    } else if(value === 3){
-                        hr2 += num
-                        mn2 += num*5
-                    }            
-                }
+                // for (const [key, value] of Object.entries(numpad_user_selection )) {
+                //     const num = Number(key);
+                //     if (value === 1){
+                //         hr2 += num
+                //     }else if (value === 2){
+                //         mn2 += num*5
+                //     } else if(value === 3){
+                //         hr2 += num
+                //         mn2 += num*5
+                //     }            
+                // }
                 console.log(hr2, phr2, mn2, pmn2)
-                console.log(numpad_user_selection)
+                // console.log(numpad_user_selection)
                 if (hr2 === phr2 && mn2 === pmn2){
                     fbc2_scores_num[0] += 1
                     fbc2_scores_str.innerHTML = `Score(correct/total): <strong>${String(fbc2_scores_num[0]).padStart(2, '0')}/${String(fbc2_scores_num[1]).padStart(2, '0')}</strong>`
@@ -651,14 +651,14 @@
             for (let col=0; col<13; col++){
                 const start_x = col * 24 + 3;
                 const start_y = 3;
-                const user_selection = numpad_user_selection[col]
-                if (user_selection > 0){
-                    numpad_context.strokeStyle = colors[user_selection]
-                    numpad_context.lineWidth = 5
-                    numpad_context.beginPath();
-                    numpad_context.rect(start_x, start_y, 20, 20);
-                    numpad_context.stroke();
-                }
+                // const user_selection = numpad_user_selection[col]
+                // if (user_selection > 0){
+                //     numpad_context.strokeStyle = colors[user_selection]
+                //     numpad_context.lineWidth = 5
+                //     numpad_context.beginPath();
+                //     numpad_context.rect(start_x, start_y, 20, 20);
+                //     numpad_context.stroke();
+                // }
                 numpad_context.font = "12px Arial";
                 if (is_hour === true){
                     numpad_context.fillStyle = 'red';
@@ -689,8 +689,6 @@
                 console.log("numpad event click listener", x)
                 playerinput_drawBoard()
             }
-            // numpad_drawBoard()
-            // playerinput_drawBoard()
         })
 
         // playerinput whitewash and redraw
