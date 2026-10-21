@@ -245,20 +245,6 @@
         </div>
 
 
-        <!-- 9Puzzle_set-->
-        <div class="puzzle-card">
-            <div class="puzzle-header">
-                <button id="timer_start_4"><strong>Start</strong></button>
-                <h4><strong>Set15Puzzle</strong></h4>
-            </div>
-
-            <canvas id="set15puzzle" width="180" height="320"></canvas>
-
-            <div id="score4"></div>
-        </div>
-
-    
-
     <script type="text/javascript" language="javascript">
 
         const colors = {
@@ -547,14 +533,6 @@
                 });
             }
 
-            // if (pmn2 === 60){
-            //     pmn2 = 0
-            //     phr2 = (phr2+1)%12
-            // }
-
-            console.log(phr2_str, phr2, pmn2_str, pmn2)
-            console.log(fbc2_puzzle_rep)
-
             fbc2_scores_num[1] += 1
         }
 
@@ -601,8 +579,6 @@
 
             fbc2_context.lineWidth = 2;
             fbc2_context.strokeStyle = "black";
-            // draw canvas borders
-
 
             // draw two vertical lines
             // first one of length 72
